@@ -459,5 +459,15 @@ namespace LitJson
 
             context.ExpectingValue = true;
         }
+
+        public void flush()
+        {
+            writer.Flush();
+        }
+
+        public void close()
+        {
+            writer.Close();
+        }
     }
 }

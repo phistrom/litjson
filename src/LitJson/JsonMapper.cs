@@ -170,7 +170,7 @@ namespace LitJson
 
             data.IsArray = type.IsArray;
 
-            if (type.GetInterface ("System.Collections.IList") != null)
+            if (GetInterface(type,"System.Collections.IList") != null)
                 data.IsList = true;
 
             foreach (PropertyInfo p_info in type.GetProperties ()) {
@@ -195,14 +195,29 @@ namespace LitJson
             }
         }
 
-        private static void AddObjectMetadata (Type type)
+        private static Type GetInterface(Type type, string name)
+        {
+            Type[] subType = type.GetInterfaces();
+
+            for (int i = 0; i < subType.Length; i++)
+            {
+                if (subType[i].Name.CompareTo(name) == 0)
+                {
+                    return subType[i];
+                }
+            }
+
+            return null;
+        }
+
+        private static void AddObjectMetadata(Type type)
         {
             if (object_metadata.ContainsKey (type))
                 return;
 
             ObjectMetadata data = new ObjectMetadata ();
 
-            if (type.GetInterface ("System.Collections.IDictionary") != null)
+            if (GetInterface (type,"System.Collections.IDictionary") != null)
                 data.IsDictionary = true;
 
             data.Properties = new Dictionary<string, PropertyMetadata> ();
@@ -327,6 +342,18 @@ namespace LitJson
                 reader.Token == JsonToken.Boolean) {
 
                 Type json_type = reader.Value.GetType ();
+
+                // juggle between int and long
+                if (json_type == typeof(int) && inst_type == typeof(long))
+                    return (long)((int)(reader.Value));
+
+                // juggle between int and string
+                if (json_type == typeof(string) && inst_type == typeof(int))
+                    return int.Parse((string)(reader.Value));
+
+                // juggle between long and string
+                if (json_type == typeof(string) && inst_type == typeof(long))
+                    return long.Parse((string)(reader.Value));
 
                 if (inst_type.IsAssignableFrom (json_type))
                     return reader.Value;

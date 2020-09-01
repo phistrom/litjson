@@ -257,7 +257,7 @@ namespace LitJson
                 number.IndexOf ('E') != -1) {
 
                 double n_double;
-                if (Double.TryParse (number, out n_double)) {
+                if (TryParseDouble(number, out n_double)) {
                     token = JsonToken.Double;
                     token_value = n_double;
 
@@ -266,7 +266,7 @@ namespace LitJson
             }
 
             int n_int32;
-            if (Int32.TryParse (number, out n_int32)) {
+            if (TryParseInt32(number, out n_int32)) {
                 token = JsonToken.Int;
                 token_value = n_int32;
 
@@ -274,7 +274,7 @@ namespace LitJson
             }
 
             long n_int64;
-            if (Int64.TryParse (number, out n_int64)) {
+            if (TryParseInt64(number, out n_int64)) {
                 token = JsonToken.Long;
                 token_value = n_int64;
 
@@ -284,6 +284,48 @@ namespace LitJson
             // Shouldn't happen, but just in case, return something
             token = JsonToken.Int;
             token_value = 0;
+        }
+
+        private bool TryParseInt64(string number, out long n_int64)
+        {
+            try
+            {
+                n_int64 = Int64.Parse(number);
+                return true;
+            }
+            catch (Exception e)
+            {
+                n_int64 = -1;
+                return false;
+            }
+        }
+
+        private bool TryParseInt32(string number, out int n_int32)
+        {
+            try
+            {
+                n_int32 = Int32.Parse(number);
+                return true;
+            }
+            catch (Exception e)
+            {
+                n_int32 = -1;
+                return false;
+            }
+        }
+
+        private bool TryParseDouble(string number, out double n_double)
+        {
+            try
+            {
+                n_double = Double.Parse(number);
+                return true;
+            }
+            catch (Exception e)
+            {
+                n_double = -1;
+                return false;
+            }
         }
 
         private void ProcessSymbol ()
